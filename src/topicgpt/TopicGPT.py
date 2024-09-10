@@ -18,6 +18,46 @@ class TopicGPT:
     """
     This is the main class for doing topic modelling with TopicGPT. 
     """
+    import numpy as np
+
+class TopicGPT:
+
+    def fit(self, corpus: list[str], verbose: bool = True):
+        """
+        Fit the model to the provided corpus and embeddings.
+
+        Args:
+            corpus (list[str]): List of documents.
+            verbose (bool, optional): Whether to print progress and details.
+        """
+
+        self.corpus = corpus 
+        
+        # 移除空文档
+        len_before_removing = len(self.corpus)
+        while '' in self.corpus:
+            corpus.remove('')
+        len_after_removing = len(self.corpus)
+        if verbose:
+            print(f"Removed {len_before_removing - len_after_removing} empty documents.")
+        
+        # 确保嵌入是二维的并处理 NaN 值
+        if self.document_embeddings is not None:
+            # 替换 NaN 值为 0（或其他合理的数值）
+            self.document_embeddings = np.nan_to_num(self.document_embeddings, nan=0.0)
+            
+            # 检查嵌入的形状是否是二维的
+            if len(self.document_embeddings.shape) == 1:
+                self.document_embeddings = self.document_embeddings.reshape(-1, 1)
+
+        # 继续执行提取主题的过程
+        if verbose: 
+            print("Extracting topics...")
+        self.topic_lis = self.extract_topics(corpus = self.corpus)
+
+        if verbose:
+            print("Describing topics...")
+        self.topic_lis = self.describe_topics(topics = self.topic_lis)
 
     def __init__(self,
              api_key: str = "",
